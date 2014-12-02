@@ -1,85 +1,42 @@
 {% for user in drone_users %}
 {% if user['state']|default('present') == 'absent' %}
-DELETE FROM "users" WHERE email = '{{ user.email }}';
+DELETE FROM "users" WHERE user_remote = '{{ user_remote }}' and user_email = '{{ user.email }}';
 {% else %}
 INSERT OR REPLACE INTO "users"
+{#INSERT OR IGNORE INTO "users"#}
     (
-        id,
-        email,
-        password,
-        token,
-        name,
-        gravatar,
-        created,
-        updated,
-        admin,
-        github_login,
-        github_token,
-        bitbucket_login,
-        bitbucket_token,
-        bitbucket_secret,
-        gitlab_token
+        user_id,
+        user_remote,
+        user_login,
+        user_access,
+        user_secret,
+        user_name,
+        user_email,
+        user_gravatar,
+        user_token,
+        user_admin,
+        user_active,
+        user_syncing,
+        user_created,
+        user_updated,
+        user_synced
     )
     VALUES (
-        {{ loop.index }},
-        '{{ user.email }}',
-{% if user['update_password']|default(False) %}
-        '{{ user["password"]|default("") }}',
-{% else %}
-        COALESCE((SELECT password FROM users WHERE email = '{{ user.email }}'), '{{ user["password"]|default("") }}'),
-{% endif %}
-        COALESCE((SELECT token FROM users WHERE email = '{{ user.email }}'), '{{ user.email|md5|b64encode|truncate(40, True, '') }}' ),
-        '{{ user.name }}',
-        '{{ user.email|md5 }}',
-        COALESCE((SELECT created FROM users WHERE email = '{{ user.email }}'), (datetime('now'))),
-        COALESCE((SELECT updated FROM users WHERE email = '{{ user.email }}'), (datetime('now'))),
-        {{ user["admin"]|default(True)|int }},
-        '{{ user["github_login"]|default("") }}',
-        '{{ user["github_token"]|default("") }}',
-        '{{ user["bitbucket_login"]|default("") }}',
-        '{{ user["bitbucket_token"]|default("") }}',
-        '{{ user["bitbucket_secret"]|default("") }}',
-        '{{ user["gitlab_token"]|default("") }}'
+        COALESCE((SELECT user_id FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), NULL),
+        "{{ user.remote }}",
+        "{{ user.login }}",
+        COALESCE((SELECT user_access FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_secret FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_name FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_email FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_gravatar FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), '{{ ""|md5 }}'),
+        "{{ (user.remote ~ user.login)|md5|b64encode|truncate(40, True, '') }}",
+        {{ user["admin"]|default(False)|int }},
+        {{ user["active"]|default(True)|int }},
+        COALESCE((SELECT user_syncing FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0),
+        COALESCE((SELECT user_created FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0),
+        COALESCE((SELECT user_updated FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0),
+        COALESCE((SELECT user_synced FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0)
     );
 {% endif %}
 {% endfor %}
-
-INSERT OR REPLACE INTO "settings"
-    (
-        id,
-        github_key,
-        github_secret,
-        github_domain,
-        github_apiurl,
-        bitbucket_key,
-        bitbucket_secret,
-        gitlab_domain,
-        gitlab_apiurl,
-        smtp_server,
-        smtp_port,
-        smtp_address,
-        smtp_username,
-        smtp_password,
-        hostname,
-        scheme,
-        open_invitations
-    )
-    VALUES (
-        1,
-        '{{ drone_github_key }}',
-        '{{ drone_github_secret }}',
-        '{{ drone_github_domain }}',
-        '{{ drone_github_apiurl }}',
-        '{{ drone_bitbucket_key }}',
-        '{{ drone_bitbucket_secret }}',
-        '{{ drone_gitlab_domain }}',
-        '{{ drone_gitlab_apiurl }}',
-        '{{ drone_smtp_server }}',
-        '{{ drone_smtp_port }}',
-        '{{ drone_smtp_address }}',
-        '{{ drone_smtp_username }}',
-        '{{ drone_smtp_password }}',
-        '{{ drone_hostname }}',
-        '{{ drone_scheme }}',
-        {{ drone_open_invitations|int }}
-    );
