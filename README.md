@@ -38,6 +38,16 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 * `active` True/False (boolean). Default `True`
 * `state` present/absent. Default `present`
 
+#### Remotes
+
+Valid values for the `remote` configuration are
+
+1. github.com
+1. enterprise.github.com
+1. gitlab.com
+1. bitbucket.org
+1. gogs
+
 ### Email
 
 * `drone_smtp_server` SMTP server address
