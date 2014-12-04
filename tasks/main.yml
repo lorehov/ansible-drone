@@ -49,7 +49,7 @@
 
 - name: Install optionally specified drone images
   docker:
-    image: "{{ item.name }}"
+    image: "{{ item.name }}:{{ item['tag']|default('latest') }}"
     state: "{{ item['state']|default('present') }}"
   with_items: drone_images
 
