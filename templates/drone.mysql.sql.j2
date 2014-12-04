@@ -1,0 +1,43 @@
+{% for user in drone_users %}
+{% if user['state']|default('present') == 'absent' %}
+DELETE FROM users WHERE user_remote = '{{ user_remote }}' and user_login = '{{ user.login }}';
+{% else %}
+INSERT INTO users
+    (
+        user_remote,
+        user_login,
+        user_access,
+        user_secret,
+        user_name,
+        user_email,
+        user_gravatar,
+        user_token,
+        user_admin,
+        user_active,
+        user_syncing,
+        user_created,
+        user_updated,
+        user_synced
+    )
+    VALUES (
+        "{{ user.remote }}",
+        "{{ user.login }}",
+        "",
+        "",
+        "",
+        "",
+        "{{ ''|md5 }}",
+        "{{ (user.remote ~ user.login)|md5|b64encode|truncate(40, True, '') }}",
+        {{ user["admin"]|default(False)|int }},
+        {{ user["active"]|default(True)|int }},
+        0,
+        0,
+        0,
+        0
+    )
+    ON DUPLICATE KEY UPDATE
+        user_admin={{ user["admin"]|default(False)|int }},
+        user_active={{ user["active"]|default(True)|int }}
+    ;
+{% endif %}
+{% endfor %}

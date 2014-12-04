@@ -1,9 +1,8 @@
 {% for user in drone_users %}
 {% if user['state']|default('present') == 'absent' %}
-DELETE FROM "users" WHERE user_remote = '{{ user_remote }}' and user_email = '{{ user.email }}';
+DELETE FROM "users" WHERE user_remote = '{{ user_remote }}' and user_login = '{{ user.login }}';
 {% else %}
 INSERT OR REPLACE INTO "users"
-{#INSERT OR IGNORE INTO "users"#}
     (
         user_id,
         user_remote,

@@ -77,6 +77,15 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 * `drone_worker_key` Path to SSL key for DOcker worker connection
 * `drone_worker_nodes` List of Docker connection strings.  Default `- "unix:///var/run/docker.sock"`
 
+### Database
+
+* `drone_database_driver` Database driver to use. Default `sqlite3`. Options are `sqlite3`, and `mysql`
+* `drone_database_datasource` Database datasource connection string. Default `/var/lib/drone/drone.sqlite`. For `mysql` see https://github.com/go-sql-driver/mysql#dsn-data-source-name
+
+MySQL support is limited, in order for mysql to be configured, use of the `mysql` command must not require username or password specification. Additionally, the database must be named `drone`.
+
+If using MySQL, `mysql-server` must already be installed and the database created before running this role.
+
 ### Other
 
 * `drone_open_invitations` True/False (boolean). Whether open sign up is enabled. Default `False`.

@@ -14,8 +14,8 @@ cert="{{ drone_sslcert }}"
 {%- endif %}
 
 [database]
-driver="sqlite3"
-datasource="/var/lib/drone/drone.sqlite"
+driver="{{ drone_database_driver }}"
+datasource="{{ drone_database_datasource }}"
 
 [registration]
 open={{ drone_open_invitations|bool|string|lower }}

@@ -11,3 +11,6 @@ drone_github_enteprise_private_mode: False
 
 drone_worker_nodes:
   - 'unix:///var/run/docker.sock'
+
+drone_database_driver: sqlite3
+drone_database_datasource: /var/lib/drone/drone.sqlite
