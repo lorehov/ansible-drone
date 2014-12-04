@@ -2,6 +2,14 @@
 
 Install [drone](https://github.com/drone/drone), [docker](https://www.docker.io/), required and optional docker images for drone operation.
 
+## Version Incompatibilities
+
+Version 1.x.x of this Ansible role is incompatibile with installations created by Version 0.x.x.
+
+Additionally, the role configuration has changed and is incompatible with previous configurations.
+
+The documentation in this document, is only for version 1.x.x.
+
 ## Requirements
 
 1. Ubuntu 12.04+
@@ -17,23 +25,18 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 `drone_images` is a list of hashes, each hash containing the following:
 
 * `name` name of the docker repo/image
-* `tag` repo/image tag to pull. Default `latest`
+* `tag` image tag to pull. Default `latest`
+* `state` absent/present. Default `present`
 
 ### drone\_users
 
 `drone_users` is a list of hashes, each hash containing the following:
 
-* `name` Persons name
-* `email` Persons email
-* `password` bcrypt password hash (optional, you will have to use forgot password to set a password)
-* `admin` True/False (boolean). Default `False`.
+* `remote` The remote system that the user exists in. e.g. `github.com`
+* `login` The remote login username of the user
+* `admin` True/False (boolean). Default `False`
+* `active` True/False (boolean). Default `True`
 * `state` present/absent. Default `present`
-* `update_password` True/False (boolean). Default `False`. Setting as True will ensure the specified password.
-
-#### bcrypt password hash
-
-1. Install `bcrypt` python module
-1. `python -c "import bcrypt; print bcrypt.hashpw('<password>', bcrypt.gensalt());"`
 
 ### Email
 
@@ -45,33 +48,40 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 
 ### GitHub
 
-* `drone_github_key` GitHub application key
+* `drone_github_client` GitHub application client ID
 * `drone_github_secret` GitHub application secret
-* `drone_github_domain` GitHub domain. Default `github.com`
-* `drone_github_apiurl` GitHub API url. Default `https://api.github.com`
+
+### GitHub Enterprise
+
+* `drone_github_enteprise_client` GitHub application client ID
+* `drone_github_enteprise_secret` GitHub application secret
+* `drone_github_enteprise_url` GitHub domain. e.g. `https://github.drone.io/`
+* `drone_github_enteprise_api_url` GitHub Enterprise API URL. e.g. `https://github.drone.io/api/v3/`
+* `drone_github_enteprise_private_mode` True/False (boolean) Whether your GitHub Enterprise installation is configured for Private Mode
 
 ### Bitbucket
 
-* `drone_bitbucket_key` Bitbucket application key
+* `drone_bitbucket_client` Bitbucket application key
 * `drone_bitbucket_secret` Bitbucket application secret
 
 ### GitLab
 
-* `drone_gitlab_domain` GitLab domain
-* `drone_gitlab_apiurl` GitLab API url
+* `drone_gitlab_url` GitLab URL. e.g. `http://gitlab.drone.io`
 
 ### Daemon
 
-* `drone_hostname` Hostname that drone will be accessed on. Default hostname defined in inventory or "ansible\_ssh\_password"
 * `drone_port` Port for drone to listen on
-* `drone_scheme` http or https (https requires `drone_sslcert` and `drone_sslkey` and probably `drone_port` configured for `443`)
 * `drone_sslcert` Path to SSL certificate
 * `drone_sslkey` Path to SSL key
+* `drone_worker_cert` Path to SSL certificate for Docker worker connection
+* `drone_worker_key` Path to SSL key for DOcker worker connection
+* `drone_worker_nodes` List of Docker connection strings.  Default `- "unix:///var/run/docker.sock"`
 
 ### Other
 
 * `drone_open_invitations` True/False (boolean). Whether open sign up is enabled. Default `False`.
-
+* `drone_session_secret` String to use when signing session tokens, leave unconfigured to allow Drone to randomly assign a secret at start
+* `drone_session_expires` Session expiration time. Default `72h`. For time formating see http://golang.org/pkg/time/#ParseDuration
 
 ### Note
 
@@ -98,22 +108,18 @@ Including an example of how to use your role (for instance, with variables passe
               tag: 5.5
               state: absent
           drone_users:
-            - name: Jim Beam
-              email: jim@jimbeam.com
-              password: '$2a$12$elB.oZwqu2Ujp.Gi0.3cBOCOpqQ1K5xfNRzxS9AQrtf13.QfvZMO6'
+            - remote: github.com
+              login: jim.beam
               admin: True
-            - name: Jack Daniel
-              email: jack@jackdaniels.com
-              password: '$2a$12$qSXdN7nCUGHSGaMI/8YyVeWdflr9fjY0/PL1ntr7mKrsVHsKRbMoO'
-            - name: Johnnie Walker
-              email: johnnie@johnniewalker.com
+            - remote: github.com
+              login: jack.daniels
+            - remote: Johnnie Walker
+              login: johnnie.walker
               state: absent
-          drone_hostname: drone.example.com
-          drone_scheme: https
           drone_port: 443
           drone_sslcert: /etc/drone/ssl.crt
           drone_sslkey: /etc/drone/ssl.key
-          drone_github_key: 3c6e0b8a9c15224a8228
+          drone_github_client: 3c6e0b8a9c15224a8228
           drone_github_secret: 5ebe2294ecd0e0f08eab7690d2a6ee69ccc4a4d8
           drone_smtp_server: localhost
           drone_smtp_port: 25
