@@ -108,10 +108,6 @@ If using MySQL, `mysql-server` must already be installed and the database create
 * `drone_session_secret` String to use when signing session tokens, leave unconfigured to allow Drone to randomly assign a secret at start
 * `drone_session_expires` Session expiration time. Default `72h`. For time formating see http://golang.org/pkg/time/#ParseDuration
 
-### Note
-
-Not all configuration options found in the database are used by drone at this time, or properly configurable by this role.
-
 ## Dependencies
 
 1. [docker\_ubuntu](https://galaxy.ansible.com/list#/roles/292)
