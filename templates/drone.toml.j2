@@ -33,6 +33,7 @@ secret="{{ drone_github_enteprise_secret }}"
 api="{{ drone_github_enteprise_api_url }}"
 url="{{ drone_github_enteprise_url }}"
 private_mode={{ drone_github_enteprise_private_mode|bool|string|lower }}
+skip_verify={{ drone_github_enteprise_skip_verify|bool|string|lower }}
 {%- endif %}
 
 {% if drone_bitbucket_client and drone_bitbucket_secret -%}
@@ -45,6 +46,12 @@ secret="{{ drone_bitbucket_secret }}"
 [gitlab]
 url="{{ drone_gitlab_url }}"
 {%- endif %}
+
+{% if drone_gogs_secret and drone_gogs_url %}
+[gogs]
+url="{{ drone_gogs_url }}"
+secret="{{ drone_gogs_secret }}"
+{% endif %}
 
 {% if drone_smtp_server -%}
 [smtp]

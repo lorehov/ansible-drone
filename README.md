@@ -58,6 +58,7 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 * `drone_github_enteprise_url` GitHub domain. e.g. `https://github.drone.io/`
 * `drone_github_enteprise_api_url` GitHub Enterprise API URL. e.g. `https://github.drone.io/api/v3/`
 * `drone_github_enteprise_private_mode` True/False (boolean) Whether your GitHub Enterprise installation is configured for Private Mode
+* `drone_github_enteprise_skip_verify` True/False (boolean) Whether to Skip SSL verification
 
 ### Bitbucket
 
@@ -67,6 +68,11 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 ### GitLab
 
 * `drone_gitlab_url` GitLab URL. e.g. `http://gitlab.drone.io`
+
+### GOGS
+
+* `drone_gogs_url` GOGS URL. e.g. `http://gogs.drone.io`
+* `drone_gogs_secret` GOGS secret
 
 ### Daemon
 

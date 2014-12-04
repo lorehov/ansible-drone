@@ -8,6 +8,7 @@ drone_smtp_address: 'drone@drone.io'
 drone_open_invitations: False
 
 drone_github_enteprise_private_mode: False
+drone_github_enteprise_skip_verify: False
 
 drone_worker_nodes:
   - 'unix:///var/run/docker.sock'
