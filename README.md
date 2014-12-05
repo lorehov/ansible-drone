@@ -24,8 +24,7 @@ Drone does not currently offer an apt repository, to upgrade to a new verison su
 
 `drone_images` is a list of hashes, each hash containing the following:
 
-* `name` name of the docker repo/image
-* `tag` image tag to pull. Default `latest`
+* `image` docker image identifier. e.g. `bradrydzewski/python:2.7`
 * `state` absent/present. Default `present`
 
 ### drone\_users
@@ -121,12 +120,9 @@ Including an example of how to use your role (for instance, with variables passe
       roles:
         - role: sivel.drone
           drone_images:
-            - name: bradrydzewski/python
-              tag: 2.7
-            - name: bradrydzewski/go
-              tag: 1.2
-            - name: bradrydzewski/php
-              tag: 5.5
+            - image: bradrydzewski/python:2.7
+            - image: bradrydzewski/go:1.2
+            - image: bradrydzewski/php:5.5
               state: absent
           drone_users:
             - remote: github.com

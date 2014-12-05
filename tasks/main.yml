@@ -46,7 +46,9 @@
 
 - name: Install required drone images
   docker:
+    name: "{{ item|md5 }}"
     image: "{{ item }}"
+    command: "/bin/true"
     state: present
   with_items:
     - bradrydzewski/ubuntu
@@ -54,7 +56,9 @@
 
 - name: Install optionally specified drone images
   docker:
-    image: "{{ item.name }}:{{ item['tag']|default('latest') }}"
+    name: "{{ item.image|md5 }}"
+    image: "{{ item.image }}"
+    command: "/bin/true"
     state: "{{ item['state']|default('present') }}"
   with_items: drone_images
 
