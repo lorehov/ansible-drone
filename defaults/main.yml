@@ -5,10 +5,18 @@ drone_session_expires: '72h'
 drone_smtp_port: '25'
 drone_smtp_address: 'drone@drone.io'
 
-drone_open_invitations: False
+drone_github_open: False
+drone_github_enterprise_open: False
+drone_bitbucket_open: False
+drone_gitlab_open: False
+drone_gogs_open: False
+
+drone_gitlab_skip_verify: False
+
+drone_github_orgs: []
+drone_github_enterprise_orgs: []
 
 drone_github_enteprise_private_mode: False
-drone_github_enteprise_skip_verify: False
 
 drone_worker_nodes:
   - 'unix:///var/run/docker.sock'

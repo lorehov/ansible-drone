@@ -31,7 +31,7 @@
 
 - name: Download drone.deb
   get_url:
-    url: http://downloads.drone.io/master/drone.deb
+    url: "http://downloads.drone.io/master/drone.deb"
     dest: /tmp/drone.deb
     force: "{{ install_drone|default(False)|bool }}"
   register: drone_get
@@ -60,7 +60,7 @@
     image: "{{ item.image }}"
     command: "/bin/true"
     state: "{{ item['state']|default('present') }}"
-  with_items: drone_images
+  with_items: drone_images|default([])
 
 - name: Install sqlite3 for drone configuration
   apt:

@@ -59,29 +59,38 @@ Valid values for the `remote` configuration are
 
 * `drone_github_client` GitHub application client ID
 * `drone_github_secret` GitHub application secret
+* `drone_github_open` True/False (boolean). Whether open sign up is enabled. Default `False`.
+* `drone_github_orgs` List of GitHub Organizations to restrict logins
 
 ### GitHub Enterprise
 
 * `drone_github_enteprise_client` GitHub application client ID
 * `drone_github_enteprise_secret` GitHub application secret
-* `drone_github_enteprise_url` GitHub domain. e.g. `https://github.drone.io/`
+* `drone_github_enteprise_url` GitHub domain. e.g. `https://github.drone.io`
 * `drone_github_enteprise_api_url` GitHub Enterprise API URL. e.g. `https://github.drone.io/api/v3/`
 * `drone_github_enteprise_private_mode` True/False (boolean) Whether your GitHub Enterprise installation is configured for Private Mode
-* `drone_github_enteprise_skip_verify` True/False (boolean) Whether to Skip SSL verification
+* `drone_github_enterprise_open` True/False (boolean). Whether open sign up is enabled. Default `False`.
+* `drone_github_enterprise_orgs` List of GitHub Organizations to restrict logins
 
 ### Bitbucket
 
 * `drone_bitbucket_client` Bitbucket application key
 * `drone_bitbucket_secret` Bitbucket application secret
+* `drone_bitbucket_open` True/False (boolean). Whether open sign up is enabled. Default `False`.
 
 ### GitLab
 
 * `drone_gitlab_url` GitLab URL. e.g. `http://gitlab.drone.io`
+* `drone_gitlab_client` GitLab application client ID
+* `drone_gitlab_secret` GitLab application secret
+* `drone_gitlab_open` True/False (boolean). Whether open sign up is enabled. Default `False`.
+* `drone_gitlab_skip_verify` True/False (boolean). Whether to skip SSL cert verification. Default `False`
 
 ### GOGS
 
 * `drone_gogs_url` GOGS URL. e.g. `http://gogs.drone.io`
 * `drone_gogs_secret` GOGS secret
+* `drone_gogs_open` True/False (boolean). Whether open sign up is enabled. Default `False`.
 
 ### Daemon
 
@@ -103,7 +112,6 @@ If using MySQL, `mysql-server` must already be installed and the database create
 
 ### Other
 
-* `drone_open_invitations` True/False (boolean). Whether open sign up is enabled. Default `False`.
 * `drone_session_secret` String to use when signing session tokens, leave unconfigured to allow Drone to randomly assign a secret at start
 * `drone_session_expires` Session expiration time. Default `72h`. For time formating see http://golang.org/pkg/time/#ParseDuration
 
