@@ -25,7 +25,7 @@ open={{ drone_github_open|bool|string|lower }}
 {% if drone_github_orgs %}
 orgs=[
 {% for org in drone_github_orgs %}
-  "{{ org }}"{{ "," if not loop.last }}
+  "{{ org }}"{{ "," if not loop.last else ""}}
 {% endfor %}
 ]
 {%- endif %}
@@ -42,7 +42,7 @@ open={{ drone_github_enterprise_open|bool|string|lower }}
 {% if drone_github_enterprise_orgs %}
 orgs=[
 {% for org in drone_github_enterprise_orgs %}
-  "{{ org }}"{{ "," if not loop.last }}
+  "{{ org }}"{{ "," if not loop.last else "" }}
 {% endfor %}
 ]
 {%- endif %}
@@ -89,6 +89,6 @@ key="{{ drone_worker_key }}"
 {% endif %}
 nodes=[
 {% for worker in drone_worker_nodes %}
-  "{{ worker }}"{{ "," if not loop.last }}
+  "{{ worker }}"{{ "," if not loop.last else "" }}
 {% endfor %}
 ]

@@ -1,23 +1,39 @@
 ---
 drone_port: 80
 drone_session_expires: '72h'
+drone_session_secret: ~
 
 drone_smtp_port: '25'
 drone_smtp_address: 'drone@drone.io'
+drone_smtp_server: ~
 
+drone_github_client: ~
+drone_github_secret: ~
 drone_github_open: False
-drone_github_enterprise_open: False
-drone_bitbucket_open: False
-drone_gitlab_open: False
-drone_gogs_open: False
-
-drone_gitlab_skip_verify: False
-
 drone_github_orgs: []
-drone_github_enterprise_orgs: []
 
+drone_github_enterprise_client: ~
+drone_github_enterprise_secret: ~
+drone_github_enterprise_api_url: ~
+drone_github_enterprise_url: ~
+drone_github_enterprise_open: False
+drone_github_enterprise_orgs: []
 drone_github_enteprise_private_mode: False
 
+drone_bitbucket_open: False
+drone_bitbucket_client: ~
+drone_bitbucket_secret: ~
+
+drone_gitlab_open: False
+drone_gitlab_url: ~
+drone_gitlab_skip_verify: False
+
+drone_gogs_open: False
+drone_gogs_secret: ~
+drone_gogs_url: ~
+
+drone_worker_cert: ~
+drone_worker_key: ~
 drone_worker_nodes:
   - 'unix:///var/run/docker.sock'
 
