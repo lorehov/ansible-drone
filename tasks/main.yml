@@ -34,7 +34,7 @@
 
 - name: Download drone.deb
   get_url:
-    url: http://downloads.drone.io/latest/drone.deb
+    url: http://downloads.drone.io/master/drone.deb
     dest: /tmp/drone.deb
     force: "{{ install_drone|default(False)|bool }}"
   register: drone_get
