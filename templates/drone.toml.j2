@@ -7,7 +7,7 @@ secret="{{ drone_session_secret }}"
 {%- endif %}
 expires="{{ drone_session_expires }}"
 
-{% if drone_sslcert and drone_sslkey -%}
+{% if drone_scheme is equalto "https" -%}
 [server.ssl]
 key="{{ drone_sslkey }}"
 cert="{{ drone_sslcert }}"
