@@ -1,0 +1,94 @@
+[server]
+port=":{{ drone_port }}"
+
+[session]
+{% if drone_session_secret %}
+secret="{{ drone_session_secret }}"
+{%- endif %}
+expires="{{ drone_session_expires }}"
+
+{% if drone_scheme is equalto "https" -%}
+[server.ssl]
+key="{{ drone_sslkey }}"
+cert="{{ drone_sslcert }}"
+{%- endif %}
+
+[database]
+driver="{{ drone_database_driver }}"
+datasource="{{ drone_database_datasource }}"
+
+{% if drone_github_client and drone_github_secret -%}
+[github]
+client="{{ drone_github_client }}"
+secret="{{ drone_github_secret }}"
+open={{ drone_github_open|bool|string|lower }}
+{% if drone_github_orgs %}
+orgs=[
+{% for org in drone_github_orgs %}
+  "{{ org }}"{{ "," if not loop.last else ""}}
+{% endfor %}
+]
+{%- endif %}
+{%- endif %}
+
+{% if drone_github_enterprise_client and drone_github_enterprise_secret and drone_github_enterprise_api_url and drone_github_enterprise_url -%}
+[github_enterprise]
+client="{{ drone_github_enterprise_client }}"
+secret="{{ drone_github_enterprise_secret }}"
+api="{{ drone_github_enterprise_api_url }}"
+url="{{ drone_github_enterprise_url }}"
+private_mode={{ drone_github_enterprise_private_mode|bool|string|lower }}
+open={{ drone_github_enterprise_open|bool|string|lower }}
+{% if drone_github_enterprise_orgs %}
+orgs=[
+{% for org in drone_github_enterprise_orgs %}
+  "{{ org }}"{{ "," if not loop.last else "" }}
+{% endfor %}
+]
+{%- endif %}
+{%- endif %}
+
+{% if drone_bitbucket_client and drone_bitbucket_secret -%}
+[bitbucket]
+client="{{ drone_bitbucket_client }}"
+secret="{{ drone_bitbucket_secret }}"
+open={{ drone_bitbucket_open|bool|string|lower }}
+{%- endif %}
+
+{% if drone_gitlab_url -%}
+[gitlab]
+url="{{ drone_gitlab_url }}"
+client="{{ drone_gitlab_client }}"
+secret="{{ drone_gitlab_secret }}"
+skip_verify={{ drone_gitlab_skip_verify|bool|string|lower }}
+open={{ drone_gitlab_open|bool|string|lower }}
+{%- endif %}
+
+{% if drone_gogs_secret and drone_gogs_url %}
+[gogs]
+url="{{ drone_gogs_url }}"
+secret="{{ drone_gogs_secret }}"
+open={{ drone_gogs_open|bool|string|lower }}
+{% endif %}
+
+{% if drone_smtp_server -%}
+[smtp]
+host="{{ drone_smtp_server }}"
+port="{{ drone_smtp_port }}"
+from="{{ drone_smtp_address }}"
+{% if drone_smtp_username and drone_smtp_password %}
+user="{{ drone_smtp_username }}"
+pass="{{ drone_smtp_password }}"
+{% endif %}
+{%- endif %}
+
+[worker]
+{% if drone_worker_cert and drone_worker_key %}
+cert="{{ drone_worker_cert }}"
+key="{{ drone_worker_key }}"
+{% endif %}
+nodes=[
+{% for worker in drone_worker_nodes %}
+  "{{ worker }}"{{ "," if not loop.last else "" }}
+{% endfor %}
+]

@@ -1,4 +1,9 @@
 ---
+- name: Validate database driver
+  assert:
+    that:
+      - drone_database_driver in ['sqlite3', 'mysql']
+
 - name: Install dependencies via apt
   apt:
     name: "{{ item }}"
@@ -13,20 +18,12 @@
     version: "{{ item.version }}"
   with_items:
     - name: docker-py
-      version: 0.3.0
+      version: 1.2.3
 
 - name: Check for drone
   stat:
     path: /usr/local/bin/drone
   register: drone_stat
-
-- name: Ensure /etc/drone exists
-  file:
-    path: /etc/drone
-    state: directory
-    owner: root
-    group: root
-    mode: 0700
 
 - name: Determine if Drone should be installed
   set_fact:
@@ -34,69 +31,101 @@
 
 - name: Download drone.deb
   get_url:
-    url: http://downloads.drone.io/latest/drone.deb
+    url: "http://downloads.drone.io/master/drone.deb"
     dest: /tmp/drone.deb
     force: "{{ install_drone|default(False)|bool }}"
   register: drone_get
 
 - name: Install drone.deb
-  command: dpkg --force-confdef --force-confold -i /tmp/drone.deb
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-    DEBIAN_PRIORITY: critical
+  apt:
+    deb: /tmp/drone.deb
   register: drone_dpkg
   when: install_drone|default(False)|bool
   notify:
    - restart drone
 
 - name: Install required drone images
-  drone_docker_pull:
-    name: "{{ item }}"
+  docker:
+    name: "{{ item|md5 }}"
+    image: "{{ item }}"
+    command: "/bin/true"
+    state: present
   with_items:
     - bradrydzewski/ubuntu
     - bradrydzewski/base
 
 - name: Install optionally specified drone images
-  drone_docker_pull:
-    name: "{{ item.name }}"
-    tag: "{{ item['tag']|default('latest') }}"
+  docker:
+    name: "{{ item.image|md5 }}"
+    image: "{{ item.image }}"
+    command: "/bin/true"
     state: "{{ item['state']|default('present') }}"
-  with_items: drone_images
+  with_items: drone_images|default([])
 
 - name: Install sqlite3 for drone configuration
   apt:
-    name: sqlite3
+    name: "{{ item }}"
     cache_valid_time: 86400
     update_cache: yes
+  with_items:
+    - "sqlite3"
+    - "libsqlite3-dev"
+  when: drone_database_driver == 'sqlite3'
 
-- name: Template sqlite file for drone configuration
+- name: Template sqlite file for drone database configuration
   template:
-    src: drone.sql.j2
-    dest: /etc/drone/drone.sql
+    src: drone.sqlite.sql.j2
+    dest: /etc/drone/drone.sqlite.sql
     owner: root
     group: root
     mode: 0600
-  register: drone_sql
+  when: drone_database_driver == 'sqlite3'
 
-- name: Hash tables to validate change
-  shell: "sqlite3 /var/lib/drone/drone.sqlite 'SELECT * FROM users; SELECT * FROM settings;' | md5sum"
-  register: drone_before_hash
-  changed_when: False
-
-- name: Configure drone settings
-  shell: "sqlite3 /var/lib/drone/drone.sqlite '.read /etc/drone/drone.sql' && sqlite3 /var/lib/drone/drone.sqlite 'SELECT * FROM users; SELECT * FROM settings;' | md5sum"
-  register: drone_after_hash
-  changed_when: drone_after_hash.stdout != drone_before_hash.stdout
-
-- name: Configure drone daemon
+- name: Template mysql file for drone database configuration
   template:
-    src: default.j2
-    dest: /etc/default/drone
+    src: drone.mysql.sql.j2
+    dest: /etc/drone/drone.mysql.sql
     owner: root
     group: root
-    mode: 0644
+    mode: 0600
+  when: drone_database_driver == 'mysql'
+
+- name: Template TOML file for drone daemon configuration
+  template:
+    src: drone.toml.j2
+    dest: /etc/drone/drone.toml
+    owner: root
+    group: root
+    mode: 0600
   notify:
     - restart drone
+
+- name: Flush restart handlers if needed
+  meta: flush_handlers
+
+- name: Hash sqlite3 tables to validate change
+  shell: "sqlite3 /var/lib/drone/drone.sqlite 'SELECT * FROM users;' | md5sum"
+  register: drone_before_hash
+  changed_when: False
+  when: drone_database_driver == 'sqlite3'
+
+- name: Configure sqlite3 drone database settings
+  shell: "sqlite3 {{ drone_database_datasource }} '.read /etc/drone/drone.sqlite.sql' && sqlite3 {{ drone_database_datasource }} 'SELECT * FROM users;' | md5sum"
+  register: drone_after_hash
+  changed_when: drone_after_hash.stdout|trim != drone_before_hash.stdout|trim
+  when: drone_database_driver == 'sqlite3'
+
+- name: Hash mysql tables to validate change
+  shell: "mysql drone --batch -sre 'SELECT * FROM users;' | md5sum"
+  register: drone_before_hash
+  changed_when: False
+  when: drone_database_driver == 'mysql'
+
+- name: Configure mysql drone database settings
+  shell: "mysql drone < /etc/drone/drone.mysql.sql && mysql drone --batch -sre 'SELECT * FROM users;' | md5sum"
+  register: drone_after_hash
+  changed_when: drone_after_hash.stdout|default('')|trim != drone_before_hash.stdout|default('')|trim
+  when: drone_database_driver == 'mysql'
 
 - name: Ensure drone is started
   service:

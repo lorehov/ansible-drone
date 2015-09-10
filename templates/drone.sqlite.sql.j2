@@ -1,0 +1,41 @@
+{% for user in drone_users %}
+{% if user['state']|default('present') == 'absent' %}
+DELETE FROM "users" WHERE user_remote = '{{ user_remote }}' and user_login = '{{ user.login }}';
+{% else %}
+INSERT OR REPLACE INTO "users"
+    (
+        user_id,
+        user_remote,
+        user_login,
+        user_access,
+        user_secret,
+        user_name,
+        user_email,
+        user_gravatar,
+        user_token,
+        user_admin,
+        user_active,
+        user_syncing,
+        user_created,
+        user_updated,
+        user_synced
+    )
+    VALUES (
+        COALESCE((SELECT user_id FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), NULL),
+        "{{ user.remote }}",
+        "{{ user.login }}",
+        COALESCE((SELECT user_access FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_secret FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_name FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_email FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), ''),
+        COALESCE((SELECT user_gravatar FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), '{{ ""|md5 }}'),
+        "{{ (user.remote ~ user.login)|md5|b64encode|truncate(40, True, '') }}",
+        {{ user["admin"]|default(False)|int }},
+        {{ user["active"]|default(True)|int }},
+        COALESCE((SELECT user_syncing FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0),
+        COALESCE((SELECT user_created FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0),
+        COALESCE((SELECT user_updated FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0),
+        COALESCE((SELECT user_synced FROM users WHERE user_remote = '{{ user.remote }}' and user_login = '{{ user.login }}'), 0)
+    );
+{% endif %}
+{% endfor %}

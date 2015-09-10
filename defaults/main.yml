@@ -1,26 +1,41 @@
 ---
-drone_scheme: http
-drone_hostname: "{{ ansible_ssh_host|default(inventory_hostname) }}"
 drone_port: 80
-drone_sslcert: ''
-drone_sslkey: ''
-drone_path: ''
+drone_session_expires: '72h'
+drone_session_secret: ~
 
-drone_github_key: ''
-drone_github_secret: ''
-drone_github_domain: github.com
-drone_github_apiurl: https://api.github.com
+drone_smtp_port: '25'
+drone_smtp_address: 'drone@drone.io'
+drone_smtp_server: ~
 
-drone_bitbucket_key: ''
-drone_bitbucket_secret: ''
+drone_github_client: ~
+drone_github_secret: ~
+drone_github_open: False
+drone_github_orgs: []
 
-drone_gitlab_domain: ''
-drone_gitlab_apiurl: ''
+drone_github_enterprise_client: ~
+drone_github_enterprise_secret: ~
+drone_github_enterprise_api_url: ~
+drone_github_enterprise_url: ~
+drone_github_enterprise_open: False
+drone_github_enterprise_orgs: []
+drone_github_enteprise_private_mode: False
 
-drone_smtp_server: ''
-drone_smtp_port: ''
-drone_smtp_address: ''
-drone_smtp_username: ''
-drone_smtp_password: ''
+drone_bitbucket_open: False
+drone_bitbucket_client: ~
+drone_bitbucket_secret: ~
 
-drone_open_invitations: 0
+drone_gitlab_open: False
+drone_gitlab_url: ~
+drone_gitlab_skip_verify: False
+
+drone_gogs_open: False
+drone_gogs_secret: ~
+drone_gogs_url: ~
+
+drone_worker_cert: ~
+drone_worker_key: ~
+drone_worker_nodes:
+  - 'unix:///var/run/docker.sock'
+
+drone_database_driver: sqlite3
+drone_database_datasource: /var/lib/drone/drone.sqlite
